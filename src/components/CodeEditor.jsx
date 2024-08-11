@@ -20,6 +20,11 @@ const CodeEditor = () => {
     setValue(CODE_SNIPPETS[language]);
   };
 
+  const handleEditorChange = (newValue) => {
+    setValue(newValue);
+    console.log("Editor content:", newValue);
+  };
+
   return (
     <Box>
       <HStack spacing={4}>
@@ -37,7 +42,7 @@ const CodeEditor = () => {
             defaultValue={CODE_SNIPPETS[language]}
             onMount={onMount}
             value={value}
-            onChange={(value) => setValue(value)}
+            onChange={handleEditorChange} // Updated handler
           />
         </Box>
         <Output editorRef={editorRef} language={language} />
@@ -45,4 +50,5 @@ const CodeEditor = () => {
     </Box>
   );
 };
+
 export default CodeEditor;

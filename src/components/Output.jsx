@@ -11,11 +11,12 @@ const Output = ({ editorRef, language }) => {
   const runCode = async () => {
     const sourceCode = editorRef.current.getValue();
     if (!sourceCode) return;
+
     try {
       setIsLoading(true);
-      const { run: result } = await executeCode(language, sourceCode);
-      setOutput(result.output.split("\n"));
-      result.stderr ? setIsError(true) : setIsError(false);
+      const result = await executeCode(language, sourceCode);
+      setOutput(result.run.output.split("\n"));
+      setIsError(!!result.run.stderr);
     } catch (error) {
       console.log(error);
       toast({
@@ -58,4 +59,5 @@ const Output = ({ editorRef, language }) => {
     </Box>
   );
 };
+
 export default Output;
