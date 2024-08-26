@@ -10,6 +10,7 @@ import {
   useBreakpointValue,
   IconButton,
   useDisclosure,
+  useTheme,
 } from "@chakra-ui/react";
 import { Editor } from "@monaco-editor/react";
 import { CODE_SNIPPETS } from "../constants";
@@ -26,7 +27,12 @@ const CodeEditor = () => {
   const [activeError, setActiveError] = useState(null);
 
   const { isOpen, onToggle } = useDisclosure();
-  const editorHeight = useBreakpointValue({ base: "50vh", md: "calc(100vh - 100px)" });
+  const editorHeight = useBreakpointValue({ base: "40vh", md: "calc(100vh - 100px)" });
+  const sidebarWidth = useBreakpointValue({ base: isOpen ? "100%" : "60px", md: isOpen ? "200px" : "50px" });
+  const sidebarHeight = useBreakpointValue({ base: isOpen ? "auto" : "60px", md: isOpen ? "auto" : "calc(100vh - 100px)" });
+  const sidebarTransition = "width 0.3s ease, background-color 0.3s ease";
+
+  const theme = useTheme();
 
   const onMount = (editor) => {
     editorRef.current = editor;
@@ -87,17 +93,18 @@ const CodeEditor = () => {
   return (
     <Container maxW="container.lg" p={2}>
       <Flex direction={{ base: "column", md: "row" }} height="100vh" gap={2}>
-        {/* Collapsible Sidebar */}
+        {/* Tooltip Navbar (Left Sidebar) */}
         <Box
-          width={{ base: "100%", md: isOpen ? "200px" : "40px" }}
+          width={sidebarWidth}
+          height={sidebarHeight}
           p={isOpen ? "2" : "1"}
-          backgroundColor="gray.700"
+          backgroundColor={isOpen ? "gray.800" : "gray.700"}
           color="white"
           display="flex"
           flexDirection="column"
           borderRadius="md"
           shadow="lg"
-          transition="width 0.3s ease"
+          transition={sidebarTransition}
           overflow="hidden"
         >
           <IconButton
@@ -108,6 +115,10 @@ const CodeEditor = () => {
             mb={2}
             alignSelf={isOpen ? "flex-end" : "center"}
             size="sm"
+            backgroundColor={theme.colors.gray[600]}
+            _hover={{ backgroundColor: theme.colors.gray[500] }}
+            _active={{ backgroundColor: theme.colors.gray[400] }}
+            borderRadius="full"
           />
           {isOpen && (
             <VStack align="start" spacing={2} overflowY="auto" height="100%">
@@ -120,7 +131,7 @@ const CodeEditor = () => {
                 borderRadius="md"
                 whiteSpace="pre-wrap"
                 width="100%"
-                height="80px"
+                height={{ base: "50px", md: "80px" }} // Reduced height on mobile
                 overflowY="auto"
                 border="1px solid"
                 borderColor="gray.600"
@@ -139,7 +150,7 @@ const CodeEditor = () => {
                 borderRadius="md"
                 whiteSpace="pre-wrap"
                 width="100%"
-                height="120px"
+                height={{ base: "70px", md: "120px" }} // Reduced height on mobile
                 overflowY="auto"
                 border="1px solid"
                 borderColor="gray.600"
@@ -152,8 +163,8 @@ const CodeEditor = () => {
                       label={error}
                       aria-label={`Error at line ${parseInt(lineNumber, 10) + 1}`}
                       placement="right"
-                      maxW="300px" // Limit the tooltip width
-                      className="tooltip-custom" // Apply custom class
+                      maxW={{ base: "120px", md: "300px" }} // Adjust max width for mobile
+                      className="tooltip-custom"
                     >
                       <Text
                         fontSize="xs"
@@ -246,7 +257,6 @@ const CodeEditor = () => {
 
 export default CodeEditor;
 
-// Custom CSS for error icon and tooltip
 const style = document.createElement('style');
 style.innerHTML = `
   .error-icon::before {
